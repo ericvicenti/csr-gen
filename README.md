@@ -4,6 +4,8 @@ csr-gen
 Generates an OpenSSL key and CSR
 
 ### Install
+1. Make sure you have openSSL (try `$ openssl` if you aren't sure)
+2. npm package install
 
 ```
 npm install csr-gen
@@ -79,6 +81,10 @@ An optional company name []:
 ### Note
 
 It is advisable to generate your keys on a machine with a significant random source like one with a mouse/trackpad.
+
+### License
+
+csr-gen is [open source](https://github.com/ericvicenti/csr-gen/blob/master/LICENSE.md) under the MIT license
 
 ### Todo
 
