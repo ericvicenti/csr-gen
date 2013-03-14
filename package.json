@@ -22,7 +22,7 @@
   "bugs": {
     "url": "http://github.com/ericvicenti/csr-gen/issues"
   },
-  "main": "src/csr",
+  "main": "src/csr-gen",
   "description": "Generates OpenSSL Certificate Signing Requests",
   "dependencies": {
       "underscore": "1.4.x"
