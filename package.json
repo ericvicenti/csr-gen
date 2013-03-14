@@ -1,0 +1,30 @@
+{
+  "name": "csr-gen",
+  "version": "0.1.0",
+  "author": {
+  	"name": "Eric Vicenti",
+  	"url": "http://github.com/ericvicenti"
+  },
+  "homepage": "http://github.com/ericvicenti/csr-gen",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ericvicenti/csr-gen.git"
+  },
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "keywords": [
+  	"csr",
+  	"openssl",
+  	"certificate",
+  	"ssl"
+  ],
+  "bugs": {
+    "url": "http://github.com/ericvicenti/csr-gen/issues"
+  },
+  "main": "src/csr",
+  "description": "Generates OpenSSL Certificate Signing Requests",
+  "dependencies": {
+      "underscore": "1.4.x"
+  }
+}
