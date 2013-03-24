@@ -2,6 +2,8 @@ var s = require('child_process').spawn;
 var _ = require('underscore');
 var fs = require('fs');
 var os = require('os');
+_.str = require('underscore.string');
+_.mixin(_.str.exports());
 
 _.mixin({
 	endsWith: function(a, b){
@@ -26,6 +28,20 @@ _.mixin({
 	}
 });
 
+var createSubjectString = function(options) {
+
+	var subj =
+		'/C='+options.country+
+		'/ST='+options.state+
+		'/L='+options.city+
+		'/O='+options.company+
+		'/OU='+options.division+
+		'/CN='+options.domain+
+		'/emailAddress='+options.email;
+	
+	return subj;
+};
+
 module.exports = function(domain, options, callback){
 
 	callback || (callback = function(){});
@@ -40,9 +56,11 @@ module.exports = function(domain, options, callback){
 	if(!options.division) options.division = 'Operations';
 	if(!options.email) options.email = '';
 	if(!options.password) options.password = '';
-	if(!options.optionalCompany) options.optionalCompany = '';
 	if(!options.keyName) options.keyName = domain+'.key';
 	if(!options.csrName) options.csrName = domain+'.csr';
+
+	// Needed to generate subject string
+	options.domain = domain;
 
 	var keyPath = options.outputDir+options.keyName;
 	var csrPath = options.outputDir+options.csrName;
@@ -50,11 +68,33 @@ module.exports = function(domain, options, callback){
 	var read = options.read;
 	var destroy = options.destroy;
 
-	var openssl = s('openssl', [
-		'req','-nodes','-newkey','rsa:2048',
+	var subj = createSubjectString(options);
+
+	_.log("Subj: " + subj);
+
+	var opts = [
+		'req',
+		'-newkey','rsa:2048',
 		'-keyout', keyPath,
-		'-out', csrPath
-	]);
+		'-out', csrPath,
+		'-subj', subj
+	];
+
+	var passFile = options.password != '' ? "pass.txt" : false;
+
+	if (passFile) {
+		fs.writeFile(passFile, options.password, function(err) {
+			if(err) {
+				_.log("Error saving password to temp file: " + err);
+			}
+		});
+		opts.push('-passout');
+		opts.push('file:'+passFile);
+	} else {
+		opts.push('-nodes');
+	}
+
+	var openssl = s('openssl', opts);
 
 	function inputText(a){
 		_.log('writing: '+a)
@@ -66,6 +106,7 @@ module.exports = function(domain, options, callback){
 	});
 
 	openssl.on('exit',function(){
+		if(passFile) fs.unlink(passFile);
 		_.log('exited');
 		if(read){
 			fs.readFile(keyPath, {encoding: 'utf8'}, function(err, key){
@@ -88,39 +129,8 @@ module.exports = function(domain, options, callback){
 	});
 
 	openssl.stderr.on('data',function(line){
-		if(_.contains(line,':')){
-			if(_.contains(line,'Country Name')){
-				_.log("country name");
-				inputText(options.country);
-			} else if(_.contains(line,'State')){
-				_.log("state");
-				inputText(options.state);
-			} else if(_.contains(line,'city')){
-				_.log("city");
-				inputText(options.city);
-			} else if(_.contains(line,'Organization Name')){
-				_.log("org");
-				inputText(options.company);
-			} else if(_.contains(line,'Organizational Unit')){
-				_.log("section");
-				inputText(options.division);
-			} else if(_.contains(line,'Common Name')){
-				_.log("domain");
-				inputText(domain);
-			} else if(_.contains(line,'Email Address')){
-				_.log("email");
-				inputText(options.email);
-			} else if(_.contains(line,'challenge password')){
-				_.log("challenge password");
-				inputText(options.password);
-			} else if(_.contains(line, 'company name')){
-				_.log("optional company");
-				inputText(options.optionalCompany);
-			} else {
-				_.log('unknown prompt::');
-				_.log(''+line);
-			}
-		}
+		line = _.trim(line);
+		if (line && line != '.' && line != '+' && line != '-----')
+			_.log('openssl: ' + line);
 	});
-
 };

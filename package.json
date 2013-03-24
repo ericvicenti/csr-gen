@@ -25,7 +25,8 @@
   "main": "src/csr-gen",
   "description": "Generates OpenSSL Certificate Signing Requests",
   "dependencies": {
-    "underscore": "1.4.x"
+    "underscore": "1.4.x",
+    "underscore.string": "2.3.x"
   },
   "licenses": [
     {
