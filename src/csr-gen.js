@@ -1,5 +1,7 @@
 var s = require('child_process').spawn;
 var _ = require('underscore');
+var fs = require('fs');
+var os = require('os');
 
 _.mixin({
 	endsWith: function(a, b){
@@ -24,11 +26,13 @@ _.mixin({
 	}
 });
 
-module.exports = function(domain, outputDir, options, callback){
+module.exports = function(domain, options, callback){
 
-	if(!_.endsWith(outputDir, '/')) outputDir += '/';
+	callback || (callback = function(){});
 
 	options || (options = {});
+	if(!options.outputDir) options.outputDir = os.tmpdir();
+	if(!_.endsWith(options.outputDir, '/')) options.outputDir += '/';
 	if(!options.company) options.company = domain;
 	if(!options.country) options.country = 'US';
 	if(!options.state) options.state = 'California';
@@ -40,10 +44,16 @@ module.exports = function(domain, outputDir, options, callback){
 	if(!options.keyName) options.keyName = domain+'.key';
 	if(!options.csrName) options.csrName = domain+'.csr';
 
+	var keyPath = options.outputDir+options.keyName;
+	var csrPath = options.outputDir+options.csrName;
+
+	var read = options.read;
+	var destroy = options.destroy;
+
 	var openssl = s('openssl', [
 		'req','-nodes','-newkey','rsa:2048',
-		'-keyout', outputDir+options.keyName,
-		'-out', outputDir+options.csrName
+		'-keyout', keyPath,
+		'-out', csrPath
 	]);
 
 	function inputText(a){
@@ -57,7 +67,24 @@ module.exports = function(domain, outputDir, options, callback){
 
 	openssl.on('exit',function(){
 		_.log('exited');
-		if(_.isFunction(callback)) callback();
+		if(read){
+			fs.readFile(keyPath, {encoding: 'utf8'}, function(err, key){
+				if(destroy) fs.unlink(keyPath, function(err){
+					if(err) return callback(err);
+					readCSR();
+				});
+				else readCSR();
+				function readCSR(){
+					fs.readFile(csrPath, {encoding: 'utf8'}, function(err, csr){
+						if(destroy) fs.unlink(csrPath, function(err){
+							if(err) return callback(err);
+							return callback(undefined, { key: key, csr: csr });
+						});
+						else callback(undefined, { key: key, csr: csr });
+					});
+				}
+			});
+		} else callback(undefined, {});
 	});
 
 	openssl.stderr.on('data',function(line){

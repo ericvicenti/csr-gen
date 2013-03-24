@@ -1,9 +1,9 @@
 {
   "name": "csr-gen",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
-  	"name": "Eric Vicenti",
-  	"url": "http://github.com/ericvicenti"
+    "name": "Eric Vicenti",
+    "url": "http://github.com/ericvicenti"
   },
   "homepage": "http://github.com/ericvicenti/csr-gen",
   "repository": {
@@ -11,13 +11,13 @@
     "url": "git://github.com/ericvicenti/csr-gen.git"
   },
   "engines": {
-    "node": ">= 0.6.0"
+    "node": ">= 0.10.0"
   },
   "keywords": [
-  	"csr",
-  	"openssl",
-  	"certificate",
-  	"ssl"
+    "csr",
+    "openssl",
+    "certificate",
+    "ssl"
   ],
   "bugs": {
     "url": "http://github.com/ericvicenti/csr-gen/issues"
@@ -25,12 +25,15 @@
   "main": "src/csr-gen",
   "description": "Generates OpenSSL Certificate Signing Requests",
   "dependencies": {
-      "underscore": "1.4.x"
+    "underscore": "1.4.x"
   },
   "licenses": [
     {
       "type": "MIT",
       "url": "https://github.com/ericvicenti/csr-gen/blob/master/LICENSE.md"
     }
-  ]
+  ],
+  "readme": "csr-gen\n=======\n\nGenerates an OpenSSL key and CSR\n\n### Install\n1. Make sure you have openSSL (try `$ openssl` if you aren't sure)\n2. npm package install\n\n```\nnpm install csr-gen\n```\nOR download from github and place in ./node_modules\n\n### Usage\n\n\n\n```\nvar csrgen = require('csr-gen');\nvar fs = require('fs');\n\nvar exportLocation = __dirname;\nvar domain = 'exampledomain.com';\n\ncsrgen(domain, exportLocation, {\n\tcompany: 'Example, Inc.',\n\temail: 'joe@foobar.com'\n}, function(err){\n\tconsole.log('CSR created!')\n\tvar csr = fs.readFileSync(__dirname + '/' + domain + '.csr');\n\tconsole.log('csr: '+csr);\n});\n\n```\n\nCSR will perform the following shell command:\n\n```\n$ openssl req -nodes -newkey rsa:2048 -keyout ./exampledomain.com.key -out ./exampledomain.com.csr\nGenerating a 2048 bit RSA private key\n...................................................................+++\n................................................................................................................................+++\nwriting new private key to './exampledomain.com.key'\n-----\nYou are about to be asked to enter information that will be incorporated\ninto your certificate request.\nWhat you are about to enter is what is called a Distinguished Name or a DN.\nThere are quite a few fields but you can leave some blank\nFor some fields there will be a default value,\nIf you enter '.', the field will be left blank.\n-----\nCountry Name (2 letter code) [AU]:US\nState or Province Name (full name) [Some-State]:California\nLocality Name (eg, city) []:San Francisco \nOrganization Name (eg, company) [Internet Widgits Pty Ltd]:Example, Inc.\nOrganizational Unit Name (eg, section) []:Operations\nCommon Name (eg, YOUR name) []:exampledomain.com\nEmail Address []:joe@foobar.com\n\nPlease enter the following 'extra' attributes\nto be sent with your certificate request\nA challenge password []:\nAn optional company name []: \n```\n\n### Parameters\n\n* company, defaults to the domain\n* country, 2 letter country code, defaults to 'US'\n* state, default: \"California\"\n* city, default: \"San Francisco\"\n* division, default: \"Operations\"\n* email, typically required, empty by default\n* password, default empty\n* optionalCompany, second company name, defaults empty\n* keyName, the filename of the private key to export. Defaults to `domain+'.key'`\n* csrName, the filename of the csr to export. Defaults to `domain+'.csr'`\n\n\n### Note\n\nIt is advisable to generate your keys on a machine with a significant random source like one with a mouse/trackpad.\n\n### License\n\ncsr-gen is [open source](https://github.com/ericvicenti/csr-gen/blob/master/LICENSE.md) under the MIT license\n\n### Todo\n\n* Real tests\n\nContributors welcome!",
+  "_id": "csr-gen@0.1.0",
+  "_from": "csr-gen@0.1.x"
 }

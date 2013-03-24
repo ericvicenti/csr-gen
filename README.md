@@ -20,16 +20,17 @@ OR download from github and place in ./node_modules
 var csrgen = require('csr-gen');
 var fs = require('fs');
 
-var exportLocation = __dirname;
 var domain = 'exampledomain.com';
 
-csrgen(domain, exportLocation, {
+csrgen(domain, {
+	outputDir: __dirname,
+	read: true,
 	company: 'Example, Inc.',
 	email: 'joe@foobar.com'
-}, function(err){
+}, function(err, keys){
 	console.log('CSR created!')
-	var csr = fs.readFileSync(__dirname + '/' + domain + '.csr');
-	console.log('csr: '+csr);
+	console.log('key: '+keys.private);
+	console.log('csr: '+keys.csr);
 });
 
 ```
@@ -66,6 +67,9 @@ An optional company name []:
 
 ### Parameters
 
+* outputDir, directory to create the keys in, defaults to os.tmpdir()
+* read, bool, should the files get read for the callback to get the key and CSR
+* destroy, bool, should the files be destroyed after they have been read
 * company, defaults to the domain
 * country, 2 letter country code, defaults to 'US'
 * state, default: "California"
