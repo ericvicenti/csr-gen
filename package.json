@@ -1,10 +1,17 @@
 {
   "name": "csr-gen",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Eric Vicenti",
     "url": "http://github.com/ericvicenti"
   },
+  "contributors": [
+    {
+      "name": "Cameron Tacklind",
+      "email": "cameron@tacklind.com",
+      "url": "http://github.com/cinderblock"
+    }
+  ],
   "homepage": "http://github.com/ericvicenti/csr-gen",
   "repository": {
     "type": "git",
