@@ -38,12 +38,17 @@ csrgen(domain, {
 CSR will perform the following shell command:
 
 ```
-$ openssl req -nodes -newkey rsa:2048 -keyout ./exampledomain.com.key -out ./exampledomain.com.csr
+$ openssl req -nodes -newkey rsa:2048 -keyout ./exampledomain.com.key -out ./exampledomain.com.csr -subj '/C=US/ST=California/L=San Fransisco/O=FooBar/OU=Operations/CN=foobar.com/emailAddress=info@foobar.biz'
 Generating a 2048 bit RSA private key
 ...................................................................+++
 ................................................................................................................................+++
 writing new private key to './exampledomain.com.key'
 -----
+```
+
+__And you're done!__ Adding the -subj (above) switch allows us to skip the following familiar process!
+
+```
 You are about to be asked to enter information that will be incorporated
 into your certificate request.
 What you are about to enter is what is called a Distinguished Name or a DN.
@@ -77,7 +82,6 @@ An optional company name []:
 * division, default: "Operations"
 * email, typically required, empty by default
 * password, default empty
-* optionalCompany, second company name, defaults empty
 * keyName, the filename of the private key to export. Defaults to `domain+'.key'`
 * csrName, the filename of the csr to export. Defaults to `domain+'.csr'`
 
