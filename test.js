@@ -4,9 +4,11 @@ console.log('Generating CSR');
 
 csrgen('foobar.com', {
   destroy: true,
+  read: true,
   outputDir: __dirname,
-	company: 'FooBar',
-	email: 'info@foobar.biz'
+  company: 'FooBar',
+  email: 'info@foobar.biz',
+  password: 'asdf'
 }, function(err, a){
 
   if(err) return console.log('Something went wrong!');
