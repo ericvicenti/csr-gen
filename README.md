@@ -18,7 +18,6 @@ OR download from github and place in ./node_modules
 
 ```
 var csrgen = require('csr-gen');
-var fs = require('fs');
 
 var domain = 'exampledomain.com';
 
@@ -29,7 +28,7 @@ csrgen(domain, {
 	email: 'joe@foobar.com'
 }, function(err, keys){
 	console.log('CSR created!')
-	console.log('key: '+keys.private);
+	console.log('key: '+keys.key);
 	console.log('csr: '+keys.csr);
 });
 
