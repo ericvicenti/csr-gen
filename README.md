@@ -1,7 +1,7 @@
 csr-gen
 =======
 
-Generates an OpenSSL key and CSR
+Generates an OpenSSL private key and CSR
 
 ### Install
 1. Make sure you have openSSL (try `$ openssl` if you aren't sure)
@@ -18,7 +18,6 @@ OR download from github and place in ./node_modules
 
 ```
 var csrgen = require('csr-gen');
-var fs = require('fs');
 
 var domain = 'exampledomain.com';
 
@@ -28,8 +27,8 @@ csrgen(domain, {
 	company: 'Example, Inc.',
 	email: 'joe@foobar.com'
 }, function(err, keys){
-	console.log('CSR created!')
-	console.log('key: '+keys.private);
+	console.log('Private key and CSR created!')
+	console.log('key: '+keys.key);
 	console.log('csr: '+keys.csr);
 });
 
@@ -72,18 +71,18 @@ An optional company name []:
 
 ### Parameters
 
-* outputDir, directory to create the keys in, defaults to os.tmpdir()
-* read, bool, should the files get read for the callback to get the key and CSR
-* destroy, bool, should the files be destroyed after they have been read
-* company, defaults to the domain
-* country, 2 letter country code, defaults to 'US'
-* state, default: "California"
-* city, default: "San Francisco"
-* division, default: "Operations"
-* email, typically required, empty by default
-* password, default empty
-* keyName, the filename of the private key to export. Defaults to `domain+'.key'`
-* csrName, the filename of the csr to export. Defaults to `domain+'.csr'`
+* __outputDir__, directory to create the keys in, defaults to os.tmpdir()
+* __read__, Boolean, should the files get read for the callback to get the key and CSR
+* __destroy__, Boolean, should the files be destroyed after they have been read
+* __company__, defaults to the domain
+* __country__, 2 letter country code, defaults to 'US'
+* __state__, default: "California"
+* __city__, default: "San Francisco"
+* __division__, default: "Operations"
+* __email__, typically required, empty by default
+* __password__, default empty
+* __keyName__, the filename of the private key to export. Defaults to `domain+'.key'`
+* __csrName__, the filename of the csr to export. Defaults to `domain+'.csr'`
 
 
 ### Note
