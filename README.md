@@ -14,8 +14,6 @@ OR download from github and place in ./node_modules
 
 ### Usage
 
-
-
 ```
 var csrgen = require('csr-gen-afip');
 var fs = require('fs');
@@ -41,6 +39,9 @@ CSR will perform the following shell command:
 ```
 $ openssl req -nodes -newkey rsa:1024 -keyout ./ElFacturero.com.ar.key -out ./ElFacturero.com.ar.csr -subj '/C=AR/O=Empresa SA/CN=ElFacturero.com.ar/serialNumber=CUIT 30444444440'
 ```
+
+For more information about `openssl req` checkout the [docs](https://www.openssl.org/docs/manmaster/apps/req.html)
+
 
 ### Parameters
 
