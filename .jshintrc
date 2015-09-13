@@ -1,0 +1,14 @@
+{
+  "predef": ["describe", "before", "it", "http", "seed", "sysClient", "shouldBeType"],
+  "node": true,
+  "es5": true,
+  "strict": true,
+  "laxbreak": true,
+  "laxcomma": true,
+  "indent": 2,
+  "latedef": true,
+  "quotmark": "single",
+  "undef": true,
+  "trailing": true,
+  "asi": true
+}
