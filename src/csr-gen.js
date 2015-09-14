@@ -1,10 +1,14 @@
 'use strict';
 
+var Promise = require('bluebird');
 var spawn = require('child_process').spawn;
 var _ = require('lodash');
-var fs = require('fs');
+var fs = Promise.promisifyAll(require('fs'));
 var os = require('os');
 var path = require('path');
+var tmp = require('tmp');
+var tmpName = Promise.promisify(tmp.tmpName);
+
 
 function log(a) {
   if (process.env.VERBOSE) {
@@ -23,94 +27,82 @@ var createSubjectString = function(options) {
   return subj;
 };
 
-module.exports = function(domain, options, callback) {
-  callback = callback || function() {};
+module.exports = function(domain, options) {
   options = options || {};
 
+  if (!options.cuit) { throw new Error('El CUIT es obligatorio.'); }
   options.outputDir = options.outputDir || os.tmpdir();
   options.company = options.company || domain;
-  if (!options.cuit) { throw new Error('El CUIT es obligatorio.'); }
-  options.keyName = options.keyName || domain + '.pem';
-  options.csrName = options.csrName || domain + '.csr';
-  // Needed to generate subject string
   options.domain = domain;
-
-  var keyPath = path.join(options.outputDir, options.keyName);
-  var csrPath = path.join(options.outputDir, options.csrName);
-
-  var read = options.read;
-  var destroy = options.destroy;
 
   var subj = createSubjectString(options);
 
-  log('Subj: ' + subj);
+  var tmpNames = [];
+  if (options.keyName) {
+    tmpNames.push(path.join(options.outputDir, options.keyName));
+  } else {
+    tmpNames.push(tmpName());
+  }
+  if (options.csrName) {
+    tmpNames.push(path.join(options.outputDir, options.csrName));
+  } else {
+    tmpNames.push(tmpName());
+  }
 
-  var opts = [
-    'req',
-    '-newkey', 'rsa:1024',
-    '-keyout', keyPath,
-    '-out', csrPath,
-    '-subj', subj,
-    '-nodes'
-  ];
+  return Promise.all(tmpNames)
+  .spread(function (keyPath, csrPath) {
 
-  var openssl = spawn('openssl', opts);
+    return new Promise(function (resolve, reject) {
+      var opts = [
+        'req',
+        '-newkey', 'rsa:1024',
+        '-keyout', keyPath,
+        '-out', csrPath,
+        '-subj', subj,
+        '-nodes'
+      ];
+      var openssl = spawn('openssl', opts);
 
+      // openssl.stdout.on('data', function(a) {
+      //   log('stdout:' + a);
+      // });
+      // openssl.stderr.on('data', function(line) {
+      //   line = _.trim(line);
+      //   if (line && line !== '.' && line !== '+' && line !== '-----') {
+      //     log('openssl: ' + line);
+      //   }
+      // });
 
-  openssl.stdout.on('data', function(a) {
-    log('stdout:' + a);
-  });
-
-  openssl.on('exit', function() {
-    log('exited');
-    if (read) {
-      fs.readFile(keyPath, {
-        encoding: 'utf8'
-      }, function(err, key) {
-
-        function readCSR() {
-          fs.readFile(csrPath, {
-            encoding: 'utf8'
-          }, function(err, csr) {
-            if (destroy) {
-              fs.unlink(csrPath, function(err) {
-                if (err) {
-                  return callback(err);
-                }
-                return callback(undefined, {
-                  key: key,
-                  csr: csr
-                });
-              });
-            } else {
-              callback(undefined, {
-                key: key,
-                csr: csr
-              });
-            }
+      openssl.on('exit', function() {
+        if (!options.read) {
+          resolve({
+            keyPath: keyPath,
+            csrPath: csrPath
           });
+          return;
         }
 
-        if (destroy) {
-          fs.unlink(keyPath, function(err) {
-            if (err) {
-              return callback(err);
-            }
-            readCSR();
+        Promise.all([
+          fs.readFileAsync(keyPath, { encoding: 'utf8' }),
+          fs.readFileAsync(csrPath, { encoding: 'utf8' })
+        ])
+        .spread(function (key, csr) {
+          if (options.destroy) {
+            // should I really care if any of these fails?
+            fs.unlinkAsync(keyPath).catch(function () {});
+            fs.unlinkAsync(csrPath).catch(function () {});
+          }
+          resolve({
+            key: key,
+            csr: csr
           });
-        } else {
-          readCSR();
-        }
+        })
+        .catch(function (err) {
+          reject(err);
+        });
       });
-    } else {
-      callback(undefined, {});
-    }
+
+    });
   });
 
-  openssl.stderr.on('data', function(line) {
-    line = _.trim(line);
-    if (line && line !== '.' && line !== '+' && line !== '-----') {
-      log('openssl: ' + line);
-    }
-  });
 };
