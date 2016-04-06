@@ -32,7 +32,7 @@
   "main": "src/csr-gen",
   "description": "Generates OpenSSL Certificate Signing Requests",
   "dependencies": {
-    "bluebird": "^2.10.0",
+    "bluebird": "^3.3.4",
     "lodash": "^3.8.0",
     "tmp": "0.0.27"
   },
