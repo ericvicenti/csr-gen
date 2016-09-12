@@ -55,11 +55,12 @@ module.exports = function(domain, options) {
     return new Promise(function (resolve, reject) {
       var opts = [
         'req',
-        '-newkey', 'rsa:1024',
+        '-newkey', 'rsa:2048',
         '-keyout', keyPath,
         '-out', csrPath,
         '-subj', subj,
-        '-nodes'
+        '-nodes',
+        '-sha256'
       ];
       var openssl = spawn('openssl', opts);
 

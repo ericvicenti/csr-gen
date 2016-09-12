@@ -37,7 +37,7 @@ csrgen(domain, {
 CSR will perform the following shell command:
 
 ```
-$ openssl req -nodes -newkey rsa:1024 -keyout ./ElFacturero.com.ar.key -out ./ElFacturero.com.ar.csr -subj '/C=AR/O=Empresa SA/CN=ElFacturero.com.ar/serialNumber=CUIT 30444444440'
+$ openssl req -newkey rsa:2048 -nodes -sha256 -keyout ./ElFacturero.com.ar.key -out ./ElFacturero.com.ar.csr -subj '/C=AR/O=Empresa SA/CN=ElFacturero.com.ar/serialNumber=CUIT 30444444440'
 ```
 
 For more information about `openssl req` checkout the [docs](https://www.openssl.org/docs/manmaster/apps/req.html)
