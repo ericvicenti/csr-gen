@@ -1,20 +1,23 @@
+'use strict';
+
 var csrgen = require('./src/csr-gen');
 
 console.log('Generating CSR');
 
-csrgen('foobar.com', {
+csrgen('ElFacturero.com.ar', {
   destroy: true,
   read: true,
-  outputDir: __dirname,
-  company: 'FooBar',
-  email: 'info@foobar.biz',
-  password: 'asdf'
-}, function(err, a){
-
-  if(err) return console.log('Something went wrong!');
-
+  // outputDir: __dirname,
+  // keyName: 'elfacturero.pem',
+  // csrName: 'elfacturero.csr',
+  company: 'Empresa Ficticia SA',
+  cuit: '30444444440'
+})
+.then(function (data) {
   console.log('Done generating CSR');
-  console.log(a.key);
-  console.log(a.csr);
-
+  console.log(data.key || data.keyPath);
+  console.log(data.csr || data.csrPath);
+})
+.catch(function (err) {
+  console.error('Something went wrong!');
 });
